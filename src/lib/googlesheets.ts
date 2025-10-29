@@ -3,10 +3,26 @@ import { Asset, AssetMetadata, StatsData } from '@/types'
 
 // Initialize Google Sheets API
 const getSheets = () => {
+  // Handle the private key - it might come with literal \n or actual newlines
+  let privateKey = process.env.GOOGLE_PRIVATE_KEY!
+
+  // Debug: Check what we're receiving (only in development/Vercel logs)
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Private key length:', privateKey.length)
+    console.log('Private key starts with:', privateKey.substring(0, 50))
+    console.log('Has literal backslash-n:', privateKey.includes('\\n'))
+    console.log('Has actual newlines:', privateKey.includes('\n'))
+  }
+
+  // If it has literal \n, convert them to actual newlines
+  if (privateKey.includes('\\n')) {
+    privateKey = privateKey.replace(/\\n/g, '\n')
+  }
+
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-      private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+      private_key: privateKey,
     },
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   })

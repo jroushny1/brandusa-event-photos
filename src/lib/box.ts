@@ -1,12 +1,28 @@
 import BoxSDK from 'box-node-sdk'
 
+// Handle the private key - it might come with literal \n or actual newlines
+let boxPrivateKey = process.env.BOX_PRIVATE_KEY!
+
+// Debug logging
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Box private key length:', boxPrivateKey.length)
+  console.log('Box key starts with:', boxPrivateKey.substring(0, 50))
+  console.log('Has literal backslash-n:', boxPrivateKey.includes('\\n'))
+  console.log('Has actual newlines:', boxPrivateKey.includes('\n'))
+}
+
+// If it has literal \n, convert them to actual newlines
+if (boxPrivateKey.includes('\\n')) {
+  boxPrivateKey = boxPrivateKey.replace(/\\n/g, '\n')
+}
+
 // Initialize Box SDK with JWT authentication
 const sdk = new BoxSDK({
   clientID: process.env.BOX_CLIENT_ID!,
   clientSecret: process.env.BOX_CLIENT_SECRET!,
   appAuth: {
     keyID: process.env.BOX_PUBLIC_KEY_ID!,
-    privateKey: process.env.BOX_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+    privateKey: boxPrivateKey,
     passphrase: process.env.BOX_PASSPHRASE!,
   },
   enterpriseID: process.env.BOX_ENTERPRISE_ID!,

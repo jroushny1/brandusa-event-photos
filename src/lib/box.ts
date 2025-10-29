@@ -142,45 +142,9 @@ export async function getBoxSharedLink(fileId: string): Promise<string> {
  * @returns Direct download URL that can be used in video/image tags
  */
 export async function getBoxDownloadUrl(fileId: string): Promise<string> {
-  const client = getBoxClient()
-
-  try {
-    // Get the file info including shared link
-    const file = await client.files.get(fileId, { fields: 'shared_link' })
-
-    // If file has a shared link with download URL, use it
-    if (file.shared_link && file.shared_link.download_url) {
-      return file.shared_link.download_url
-    }
-
-    // If no shared link exists, create one
-    if (!file.shared_link) {
-      const updatedFile = await client.files.update(fileId, {
-        shared_link: {
-          access: 'company',
-          permissions: {
-            can_download: true,
-            can_preview: true,
-          },
-        },
-      })
-
-      if (updatedFile.shared_link && updatedFile.shared_link.download_url) {
-        return updatedFile.shared_link.download_url
-      }
-    }
-
-    // Fallback: return the shared link URL (not ideal but better than nothing)
-    if (file.shared_link && file.shared_link.url) {
-      return file.shared_link.url
-    }
-
-    // Last resort: return Box web URL
-    return `https://app.box.com/file/${fileId}`
-  } catch (error) {
-    console.error('Error getting Box download URL:', error)
-    throw new Error(`Failed to get download URL: ${error instanceof Error ? error.message : 'Unknown error'}`)
-  }
+  // Return our proxy endpoint URL instead of trying to get direct Box URLs
+  // This endpoint will fetch the file from Box and stream it to the browser
+  return `/api/box-file/${fileId}`
 }
 
 /**

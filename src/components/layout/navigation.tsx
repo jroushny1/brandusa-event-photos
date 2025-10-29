@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Upload, Image, BarChart3, Settings, Home, LogOut, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { signOut } from '@/lib/auth'
+import { handleSignOut } from '@/app/actions/auth'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -71,12 +71,7 @@ export function Navigation({ user }: NavigationProps) {
                   <User className="h-4 w-4" />
                   <span>{user.name || user.email}</span>
                 </div>
-                <form
-                  action={async () => {
-                    'use server'
-                    await signOut({ redirectTo: '/auth/signin' })
-                  }}
-                >
+                <form action={handleSignOut}>
                   <Button
                     type="submit"
                     variant="ghost"

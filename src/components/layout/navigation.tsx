@@ -84,6 +84,18 @@ export function Navigation({ user }: NavigationProps) {
                 </form>
               </>
             )}
+            {!user && (
+              <Link href="/auth/signin">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  <span className="hidden md:inline">Sign In</span>
+                </Button>
+              </Link>
+            )}
             <Link href="/upload">
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                 <Upload className="h-4 w-4 mr-2" />
